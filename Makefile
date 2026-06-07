@@ -8,4 +8,4 @@ clean:
 	rm -rf dist node_modules
 
 publish: build
-	npm publish
+	npm publish --access public

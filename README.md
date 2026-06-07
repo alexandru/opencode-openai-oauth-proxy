@@ -11,8 +11,8 @@ Add the plugin to your `opencode.json`:
   "plugin": [
     ["opencode-openai-oauth-proxy", {
       "routeMap": {
-        "https://auth.openai.com/": "https://api.intl.nedelcu.net/openai-auth/",
-        "https://chatgpt.com/backend-api/": "https://api.intl.nedelcu.net/openai-codex-api/"
+        "https://auth.openai.com/": "https://proxy.example.com/openai-auth/",
+        "https://chatgpt.com/backend-api/": "https://proxy.example.com/openai-codex-api/"
       }
     }]
   ]
@@ -34,7 +34,7 @@ The plugin accepts a single option — `routeMap` — which is a dictionary mapp
 
 ### Proxy server setup
 
-Your proxy server must transparently forward HTTPS requests. For example, if your proxy runs at `api.intl.nedelcu.net` and uses prefix-based routing:
+Your proxy server must transparently forward HTTPS requests. For example, if your proxy runs at `proxy.example.com` and uses prefix-based routing:
 
 ```
 /openai-auth/       → https://auth.openai.com/
@@ -50,20 +50,20 @@ The proxy must preserve all HTTP headers, query parameters, and request bodies.
   "plugin": [
     ["opencode-openai-oauth-proxy", {
       "routeMap": {
-        "https://auth.openai.com/": "https://api.intl.nedelcu.net/openai-auth/",
-        "https://chatgpt.com/backend-api/": "https://api.intl.nedelcu.net/openai-codex-api/"
+        "https://auth.openai.com/": "https://proxy.example.com/openai-auth/",
+        "https://chatgpt.com/backend-api/": "https://proxy.example.com/openai-codex-api/"
       }
     }]
   ],
   "provider": {
     "kimi-for-coding": {
       "options": {
-        "baseURL": "https://api.intl.nedelcu.net/km/v1"
+        "baseURL": "https://proxy.example.com/km/v1"
       }
     },
     "opencode-go": {
       "options": {
-        "baseURL": "https://api.intl.nedelcu.net/go/v1"
+        "baseURL": "https://proxy.example.com/go/v1"
       }
     }
   }
