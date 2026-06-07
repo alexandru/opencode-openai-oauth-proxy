@@ -1,6 +1,6 @@
 {
   "name": "opencode-openai-oauth-proxy",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "OpenCode plugin that proxies OpenAI OAuth authentication and Codex API calls through a user-specified proxy server",
   "type": "module",
   "main": "dist/index.js",

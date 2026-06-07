@@ -62,6 +62,11 @@ let pendingOAuth: PendingOAuth | undefined
 function resolveUrl(url: string, routeMap: Record<string, string>): string {
   for (const [source, target] of Object.entries(routeMap)) {
     if (url.startsWith(source)) return target + url.slice(source.length)
+    // Handle trailing slash mismatch: source has "/" but url doesn't
+    const sourceClean = source.endsWith("/") ? source.slice(0, -1) : source
+    if (sourceClean.length < source.length && url === sourceClean) {
+      return target.endsWith("/") ? target.slice(0, -1) : target
+    }
   }
   return url
 }
@@ -72,6 +77,14 @@ function resolveIssuer(routeMap: Record<string, string>): string {
 
 function resolveCodexApi(routeMap: Record<string, string>): string {
   return resolveUrl(DEFAULT_CODEX_API + "/", routeMap).replace(/\/$/, "")
+}
+
+function log(label: string, ...args: unknown[]) {
+  console.log(`[openai-oauth-proxy] ${label}`, ...args)
+}
+
+function pluginActive(routeMap: Record<string, string>): boolean {
+  return Object.keys(routeMap).length > 0
 }
 
 // ---------------------------------------------------------------------------
@@ -348,10 +361,20 @@ export const OpenAIProxyAuthPlugin = async (
 ): Promise<Hooks> => {
   const opts = (options ?? {}) as ProxyOptions
   const routeMap = opts.routeMap ?? {}
+  const active = pluginActive(routeMap)
   const issuer = resolveIssuer(routeMap)
   const codexApiEndpoint = resolveCodexApi(routeMap)
 
+  if (active) {
+    log("active", { issuer, codexApiEndpoint, routeMap })
+  }
+
   return {
+    config: async (_cfg) => {
+      if (active) {
+        log("config received — proxy routing active")
+      }
+    },
     auth: {
       provider: "openai",
 
@@ -360,7 +383,9 @@ export const OpenAIProxyAuthPlugin = async (
       // ---------------------------------------------------------------
       methods: [
         {
-          label: "ChatGPT Pro/Plus (browser, proxied)",
+          label: active
+            ? "ChatGPT Pro/Plus (browser, proxy: " + issuer + ")"
+            : "ChatGPT Pro/Plus (browser, proxied)",
           type: "oauth" as const,
           authorize: async (): Promise<AuthOAuthResult> => {
             const { redirectUri } = await startOAuthServer(issuer)
