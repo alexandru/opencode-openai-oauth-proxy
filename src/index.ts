@@ -79,14 +79,6 @@ function resolveCodexApi(routeMap: Record<string, string>): string {
   return resolveUrl(DEFAULT_CODEX_API + "/", routeMap).replace(/\/$/, "")
 }
 
-function log(label: string, ...args: unknown[]) {
-  console.log(`[openai-oauth-proxy] ${label}`, ...args)
-}
-
-function pluginActive(routeMap: Record<string, string>): boolean {
-  return Object.keys(routeMap).length > 0
-}
-
 // ---------------------------------------------------------------------------
 // PKCE
 // ---------------------------------------------------------------------------
@@ -361,20 +353,10 @@ export const OpenAIProxyAuthPlugin = async (
 ): Promise<Hooks> => {
   const opts = (options ?? {}) as ProxyOptions
   const routeMap = opts.routeMap ?? {}
-  const active = pluginActive(routeMap)
   const issuer = resolveIssuer(routeMap)
   const codexApiEndpoint = resolveCodexApi(routeMap)
 
-  if (active) {
-    log("active", { issuer, codexApiEndpoint, routeMap })
-  }
-
   return {
-    config: async (_cfg) => {
-      if (active) {
-        log("config received — proxy routing active")
-      }
-    },
     auth: {
       provider: "openai",
 
@@ -383,9 +365,7 @@ export const OpenAIProxyAuthPlugin = async (
       // ---------------------------------------------------------------
       methods: [
         {
-          label: active
-            ? "ChatGPT Pro/Plus (browser, proxy: " + issuer + ")"
-            : "ChatGPT Pro/Plus (browser, proxied)",
+          label: "ChatGPT Pro/Plus (browser, " + issuer + ")",
           type: "oauth" as const,
           authorize: async (): Promise<AuthOAuthResult> => {
             const { redirectUri } = await startOAuthServer(issuer)
