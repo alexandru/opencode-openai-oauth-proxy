@@ -9,7 +9,7 @@ Add the plugin to your `opencode.json`:
 ```json
 {
   "plugin": [
-    ["@alexelcu/opencode-openai-oauth-proxy", {
+    ["opencode-openai-oauth-proxy", {
       "routeMap": {
         "https://auth.openai.com/": "https://api.intl.nedelcu.net/openai-auth/",
         "https://chatgpt.com/backend-api/": "https://api.intl.nedelcu.net/openai-codex-api/"
@@ -48,7 +48,7 @@ The proxy must preserve all HTTP headers, query parameters, and request bodies.
 ```json
 {
   "plugin": [
-    ["@alexelcu/opencode-openai-oauth-proxy", {
+    ["opencode-openai-oauth-proxy", {
       "routeMap": {
         "https://auth.openai.com/": "https://api.intl.nedelcu.net/openai-auth/",
         "https://chatgpt.com/backend-api/": "https://api.intl.nedelcu.net/openai-codex-api/"
@@ -115,7 +115,7 @@ make build
 make publish
 ```
 
-Requires an npm token with publish access to the `@alexelcu` scope.
+Requires an npm token with publish access.
 
 ## License
 
